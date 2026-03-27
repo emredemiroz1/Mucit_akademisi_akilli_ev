@@ -25,22 +25,16 @@
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
     }
-    .btn-touch {
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      cursor: pointer;
+    .btn-touch { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
+    .btn-touch:active:not(:disabled) { transform: scale(0.96); }
+    
+    @keyframes pulse-border {
+      0% { border-color: rgba(239, 68, 68, 0.3); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.2); }
+      50% { border-color: rgba(239, 68, 68, 0.8); box-shadow: 0 0 10px 0 rgba(239, 68, 68, 0.4); }
+      100% { border-color: rgba(239, 68, 68, 0.3); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
     }
-    .btn-touch:active:not(:disabled) {
-      transform: scale(0.96);
-    }
-    .loader {
-      width: 20px;
-      height: 20px;
-      border: 3px solid rgba(255, 255, 255, 0.3);
-      border-bottom-color: #fff;
-      border-radius: 50%;
-      display: inline-block;
-      animation: spin 1s linear infinite;
-    }
+    .danger-pulse { animation: pulse-border 2s infinite; }
+    .loader { width: 20px; height: 20px; border: 3px solid rgba(255, 255, 255, 0.3); border-bottom-color: #fff; border-radius: 50%; display: inline-block; animation: spin 1s linear infinite; }
     @keyframes spin { 100% { transform: rotate(360deg); } }
   </style>
 
@@ -75,66 +69,86 @@
 
     function MetricCard({ title, value, unit, emoji, isDanger, isWarning }) {
       let colorClass = "border-white/5 bg-slate-800/50";
-      if (isDanger) colorClass = "border-red-500/50 bg-red-500/10 text-red-100";
-      else if (isWarning) colorClass = "border-amber-500/50 bg-amber-500/10 text-amber-100";
+      if (isDanger) colorClass = "border-red-500/50 bg-red-500/10 text-red-400";
+      else if (isWarning) colorClass = "border-amber-500/50 bg-amber-500/10 text-amber-400";
+      else colorClass = "border-emerald-500/30 bg-emerald-500/10 text-emerald-400";
 
       return (
-        <div className={`rounded-xl p-3 flex flex-col items-center justify-center border transition-colors ${colorClass}`}>
-          <div className="text-xl mb-1">{emoji}</div>
-          <div className="text-[9px] font-bold uppercase tracking-widest opacity-70 mb-1">{title}</div>
-          <div className="text-xl font-black">{value}<span className="text-xs opacity-60 ml-1">{unit}</span></div>
+        <div className={`rounded-xl p-4 flex flex-col items-center justify-center border transition-colors ${colorClass}`}>
+          <div className="text-3xl mb-2">{emoji}</div>
+          <div className="text-[11px] font-bold uppercase tracking-widest opacity-70 mb-1 text-white">{title}</div>
+          <div className="text-2xl font-black">{value}<span className="text-sm opacity-60 ml-1">{unit}</span></div>
         </div>
       );
     }
 
     function ModernWidget({ title, subtitle, icon, active, onClick, colorClass }) {
       return (
-        <button onClick={onClick} className={`relative overflow-hidden p-4 rounded-[20px] border text-left btn-touch transition-all duration-300 ${active ? colorClass : 'bg-slate-800/50 border-white/5 text-slate-400'}`}>
+        <button onClick={onClick} className={`relative overflow-hidden p-5 rounded-[20px] border text-left btn-touch transition-all duration-300 ${active ? colorClass : 'bg-slate-800/50 border-white/5 text-slate-400'}`}>
           <div className="flex justify-between items-start mb-4">
-             <div className={`text-3xl transition-transform duration-300 ${active ? 'scale-110' : 'grayscale opacity-50'}`}>{icon}</div>
-             <div className={`w-10 h-6 rounded-full p-1 transition-all ${active ? 'bg-white/30' : 'bg-slate-700'}`}>
-                <div className={`w-4 h-4 bg-white rounded-full transition-all shadow-sm ${active ? 'translate-x-4' : 'translate-x-0'}`}></div>
+             <div className={`text-4xl transition-transform duration-300 ${active ? 'scale-110' : 'grayscale opacity-50'}`}>{icon}</div>
+             <div className={`w-12 h-6 rounded-full p-1 transition-all ${active ? 'bg-white/30' : 'bg-slate-700'}`}>
+                <div className={`w-4 h-4 bg-white rounded-full transition-all shadow-sm ${active ? 'translate-x-6' : 'translate-x-0'}`}></div>
              </div>
           </div>
-          <div className={`font-bold text-sm tracking-wide ${active ? 'text-white' : 'text-slate-300'}`}>{title}</div>
-          <div className="text-[9px] uppercase tracking-widest opacity-70 mt-1">{subtitle}</div>
+          <div className={`font-black text-sm tracking-wide ${active ? 'text-white' : 'text-slate-300'}`}>{title}</div>
+          <div className="text-[9px] uppercase tracking-widest opacity-70 mt-1 font-bold">{subtitle}</div>
         </button>
       );
     }
 
     function HomeVisualizer({ data }) {
       return (
-        <div className="mb-8 w-full max-w-[380px] mx-auto animate-[fadeIn_0.5s_ease-out]">
-          <div className="text-center mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center justify-center gap-2">
+        <div className="mb-10 w-full max-w-[700px] mx-auto animate-[fadeIn_0.5s_ease-out]">
+          <div className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center justify-center gap-2 mb-3">
             <span>👁️</span> Dijital Ev İkizi
           </div>
-          <div className="w-full bg-slate-900/90 rounded-[32px] border-4 border-slate-800 p-4 shadow-[0_0_40px_rgba(0,0,0,0.4)] flex flex-col relative overflow-hidden h-[240px]">
-            <div className="w-0 h-0 border-l-[160px] border-r-[160px] border-b-[60px] border-l-transparent border-r-transparent border-b-slate-800 mx-auto relative mb-2"></div>
-            <div className="flex-1 bg-slate-800 rounded-lg flex flex-col border border-white/5 relative">
-              <div className="flex-1 flex border-b border-white/5">
-                <div className={`flex-1 border-r border-white/5 flex items-center justify-center transition-colors duration-500 ${data.light ? 'bg-amber-500/10' : 'bg-transparent'}`}>
-                  <div className={`text-4xl transition-all duration-500 ${data.light ? 'drop-shadow-[0_0_15px_#fbbf24] scale-110' : 'opacity-30 grayscale'}`}>💡</div>
+          <div className="w-full aspect-[16/9] bg-slate-900/90 rounded-[32px] border-4 border-slate-800 p-4 shadow-[0_0_40px_rgba(0,0,0,0.4)] flex flex-col relative overflow-hidden">
+             
+             {/* Ev Çatısı ve Alarm */}
+             <div className="w-0 h-0 border-l-[180px] border-r-[180px] border-b-[70px] border-l-transparent border-r-transparent border-b-slate-800 mx-auto relative mb-2 flex justify-center">
+                <div className={`absolute top-[25px] flex flex-col items-center transition-all duration-500 ${data.alarm ? 'text-red-500 drop-shadow-[0_0_20px_#ef4444]' : 'text-slate-600 opacity-30'}`}>
+                   <div className={`text-4xl ${data.alarm ? 'animate-pulse' : ''}`}>🚨</div>
                 </div>
-                <div className={`flex-1 flex items-center justify-center gap-4 transition-colors duration-500 ${data.kitchen ? 'bg-blue-500/10' : 'bg-transparent'}`}>
-                  <div className={`text-3xl transition-all duration-500 ${data.kitchen ? 'drop-shadow-[0_0_15px_#60a5fa] scale-110' : 'opacity-30 grayscale'}`}>🍽️</div>
-                  <div className={`text-3xl transition-all duration-500 relative ${data.coffee ? 'drop-shadow-[0_0_15px_#f97316] scale-110' : 'opacity-30 grayscale'}`}>
-                    ☕{data.coffee && <div className="absolute -top-4 left-2 text-sm animate-bounce">♨️</div>}
-                  </div>
+             </div>
+             
+             {/* Ev Gövdesi (Odalar) */}
+             <div className="flex-1 bg-slate-800 rounded-xl flex border border-white/5 relative z-10 mb-12 shadow-2xl overflow-hidden">
+                {/* Salon */}
+                <div className={`flex-1 flex flex-col items-center justify-center relative border-r border-white/5 transition-colors duration-500 ${data.light1 ? 'bg-amber-500/15' : 'bg-slate-800/50'}`}>
+                   <div className="absolute top-3 left-3 text-[10px] font-black text-white/40 uppercase tracking-widest">Salon</div>
+                   <div className={`text-6xl transition-all duration-500 ${data.light1 ? 'drop-shadow-[0_0_30px_#fbbf24] scale-110' : 'opacity-30 grayscale'}`}>💡</div>
+                   {/* Vantilatör */}
+                   <div className={`absolute bottom-4 right-4 text-4xl transition-all duration-500 ${data.fan ? 'animate-spin text-cyan-400 drop-shadow-[0_0_15px_#22d3ee]' : 'opacity-30 grayscale'}`}>🌀</div>
                 </div>
-              </div>
-              <div className="flex-1 flex">
-                 <div className={`flex-1 flex items-center justify-center gap-4 border-r border-white/5 transition-colors duration-500 ${data.heater && data.fan ? 'bg-purple-500/10' : data.heater ? 'bg-red-500/10' : data.fan ? 'bg-cyan-500/10' : 'bg-transparent'}`}>
-                    <div className={`text-3xl transition-all duration-500 ${data.heater ? 'drop-shadow-[0_0_15px_#ef4444] scale-110 animate-pulse' : 'opacity-30 grayscale'}`}>🔥</div>
-                    <div className={`text-3xl transition-all duration-500 ${data.fan ? 'drop-shadow-[0_0_15px_#06b6d4] animate-spin' : 'opacity-30 grayscale'}`}>🌀</div>
-                 </div>
-                 <div className={`flex-1 flex items-center justify-center transition-colors duration-500 ${data.plug ? 'bg-emerald-500/10' : 'bg-transparent'}`}>
-                    <div className="flex flex-col items-center gap-1">
-                      <div className={`text-4xl transition-all duration-500 ${data.plug ? 'drop-shadow-[0_0_15px_#10b981] scale-110' : 'opacity-30 grayscale'}`}>📺</div>
-                      <div className={`text-[10px] transition-all duration-500 font-bold ${data.plug ? 'text-emerald-400' : 'text-slate-600 opacity-30'}`}>🔌 Aktif</div>
-                    </div>
-                 </div>
-              </div>
-            </div>
+                {/* Mutfak */}
+                <div className={`flex-1 flex flex-col items-center justify-center relative transition-colors duration-500 ${data.light2 ? 'bg-amber-500/15' : 'bg-slate-800/50'}`}>
+                   <div className="absolute top-3 right-3 text-[10px] font-black text-white/40 uppercase tracking-widest">Mutfak</div>
+                   <div className={`text-6xl transition-all duration-500 ${data.light2 ? 'drop-shadow-[0_0_30px_#fbbf24] scale-110' : 'opacity-30 grayscale'}`}>💡</div>
+                </div>
+             </div>
+
+             {/* Bahçe ve Dış Mekan */}
+             <div className="absolute bottom-0 left-0 w-full h-16 bg-emerald-900/30 border-t-4 border-emerald-800/50 flex items-end justify-between px-10 pb-2">
+                
+                {/* Bahçe Kapısı (Servo) */}
+                <div className="flex flex-col items-center justify-end h-full relative w-20">
+                   <div className={`absolute -top-8 text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded transition-colors ${data.gate ? 'text-emerald-400 bg-emerald-500/20' : 'text-red-400 bg-red-500/20'}`}>
+                     {data.gate ? 'AÇIK' : 'KAPALI'}
+                   </div>
+                   <div className={`absolute bottom-3 left-4 w-16 h-2.5 rounded transition-all duration-700 origin-left ${data.gate ? '-rotate-90 bg-emerald-500 shadow-[0_0_15px_#10b981]' : 'rotate-0 bg-red-500 shadow-[0_0_15px_#ef4444]'}`}>
+                      <div className="w-full h-full" style={{backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(255,255,255,0.3) 5px, rgba(255,255,255,0.3) 10px)'}}></div>
+                   </div>
+                   <div className="w-3 h-5 bg-slate-700 rounded-t z-10 border border-slate-600"></div>
+                </div>
+
+                {/* Bahçe Aydınlatması */}
+                <div className="flex flex-col items-center justify-end h-full relative">
+                   <div className={`absolute -top-10 text-5xl transition-all duration-500 ${data.gardenLight ? 'text-amber-400 drop-shadow-[0_0_30px_#fbbf24] scale-110' : 'text-slate-600 opacity-40'}`}>🌞</div>
+                   <div className="w-2 h-12 bg-slate-600 rounded-t border-x border-slate-500"></div>
+                </div>
+
+             </div>
           </div>
         </div>
       );
@@ -147,8 +161,15 @@
       const [loggedIn, setLoggedIn] = useState(false);
       const [errorMsg, setErrorMsg] = useState("");
 
-      const [homeData, setHomeData] = useState({ light: false, kitchen: false, coffee: false, heater: false, fan: false, plug: false });
-      const [homeSim, setHomeSim] = useState({ power: 120, temp: 23.5 }); 
+      const [homeData, setHomeData] = useState({ 
+        light1: false, 
+        light2: false, 
+        gardenLight: false, 
+        alarm: false, 
+        gate: false, 
+        fan: false 
+      });
+      const [homeSim, setHomeSim] = useState({ temp: 23.5 }); 
 
       useEffect(() => {
         const t = setInterval(() => { if (window.firebaseReady && window.FB) { setReady(true); clearInterval(t); } }, 100);
@@ -169,7 +190,14 @@
             if (snap.exists()) {
                const d = snap.data();
                const gv = (key) => d.fields ? (d.fields[key]?.booleanValue || false) : (d[key] || false);
-               setHomeData({ light: gv("light"), kitchen: gv("kitchen"), coffee: gv("coffee"), heater: gv("heater"), fan: gv("fan"), plug: gv("plug") });
+               setHomeData({ 
+                 light1: gv("light1"), 
+                 light2: gv("light2"), 
+                 gardenLight: gv("gardenLight"), 
+                 alarm: gv("alarm"), 
+                 gate: gv("gate"), 
+                 fan: gv("fan") 
+               });
             } 
         });
         return () => unsubHome();
@@ -181,32 +209,21 @@
         await window.FB.setDoc(ref, { [field]: !homeData[field] }, { merge: true }).catch(console.error);
       };
 
+      // Vantilatör ile çalışan doğal oda ısısı simülasyonu
       useEffect(() => {
         if(!user) return;
         const interval = setInterval(() => {
-           let power = 50; 
-           if(homeData.light) power += 40;
-           if(homeData.kitchen) power += 60;
-           if(homeData.plug) power += 150;
-           if(homeData.heater) power += 1200;
-           if(homeData.coffee) power += 800;
-           if(homeData.fan) power += 80;
-           
-           power += Math.floor(Math.random() * 20);
-
            setHomeSim(prev => {
              let temp = prev.temp;
-             if (homeData.heater) temp += 0.4;
-             else if (homeData.fan) temp -= 0.3;
+             if (homeData.fan) temp -= 0.3; // Fan açıksa soğut
              else {
-               if (temp > 22.5) temp -= 0.1;
-               else if (temp < 22.0) temp += 0.1;
+               if (temp < 24.0) temp += 0.1; // Doğal ısınma
              }
-             return { power, temp: Math.round(temp * 10) / 10 };
+             return { temp: Math.round(temp * 10) / 10 };
            });
         }, 2000);
         return () => clearInterval(interval);
-      }, [user, homeData]);
+      }, [user, homeData.fan]);
 
       function login() {
         if (pin === "0000") {
@@ -236,38 +253,55 @@
         );
       }
 
-      const activeHomeDevices = Object.values(homeData).filter(Boolean).length;
-
       return (
         <div className="min-h-screen pb-12">
           <header className="px-6 py-5 glass-panel sticky top-0 z-50 flex items-center justify-between shadow-lg">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-lg shadow-lg">🏠</div>
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-blue-600 flex items-center justify-center text-2xl shadow-lg">🏠</div>
               <div>
-                <div className="text-lg font-black tracking-tight text-white">AKILLI EV</div>
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500"></span> MUCİT AKADEMİSİ</div>
+                <div className="text-xl font-black tracking-tight text-white">AKILLI EV</div>
+                <div className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500"></span> MUCİT AKADEMİSİ</div>
               </div>
             </div>
-            <button onClick={() => { setLoggedIn(false); setPin(""); }} className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-xs font-bold btn-touch hover:bg-white/10">ÇIKIŞ</button>
+            <button onClick={() => { setLoggedIn(false); setPin(""); }} className="px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-sm font-bold btn-touch hover:bg-white/10">ÇIKIŞ</button>
           </header>
 
-          <main className="max-w-3xl mx-auto px-4 py-8 animate-[fadeIn_0.3s_ease-out]">
+          <main className="max-w-4xl mx-auto px-4 py-8 animate-[fadeIn_0.3s_ease-out]">
+            
             <HomeVisualizer data={homeData} />
 
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <MetricCard title="Evin Sıcaklığı" value={homeSim.temp} unit="°C" emoji="🌡️" isDanger={homeSim.temp > 28} isWarning={homeSim.temp < 18} />
-              <MetricCard title="Çalışan Cihaz" value={activeHomeDevices} unit="Adet" emoji="🔌" isDanger={activeHomeDevices >= 5} isWarning={activeHomeDevices >= 3} />
+            <div className="grid grid-cols-2 gap-4 mb-8">
+              <MetricCard 
+                title="Evin Sıcaklığı" 
+                value={homeSim.temp} 
+                unit="°C" 
+                emoji="🌡️" 
+                isDanger={homeSim.temp > 28} 
+                isWarning={homeSim.temp < 18} 
+              />
+              <MetricCard 
+                title="Güvenlik Kalkanı" 
+                value={homeData.alarm ? "AKTİF" : "KAPALI"} 
+                unit="" 
+                emoji={homeData.alarm ? "🛡️" : "🔓"} 
+                isDanger={!homeData.alarm} 
+                isWarning={false} 
+              />
             </div>
 
-            <div className="glass-panel p-5 rounded-[24px] border border-white/10 shadow-xl">
-              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2"><span>📱</span> Ev Aletleri Kontrol Merkezi</h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                <ModernWidget title="Salon Işığı" subtitle="Ana Aydınlatma" icon="💡" active={homeData.light} onClick={() => toggleHome("light")} colorClass="bg-amber-500/20 border-amber-500/50 text-amber-200" />
-                <ModernWidget title="Mutfak Işığı" subtitle="Tezgah Aydınlatması" icon="🍽️" active={homeData.kitchen} onClick={() => toggleHome("kitchen")} colorClass="bg-blue-500/20 border-blue-500/50 text-blue-200" />
-                <ModernWidget title="Kahve Makinesi" subtitle="Mutfak Aletleri" icon="☕" active={homeData.coffee} onClick={() => toggleHome("coffee")} colorClass="bg-orange-500/20 border-orange-500/50 text-orange-200" />
-                <ModernWidget title="Isıtıcı" subtitle="Ortam Isıtma" icon="🔥" active={homeData.heater} onClick={() => toggleHome("heater")} colorClass="bg-red-500/20 border-red-500/50 text-red-200" />
-                <ModernWidget title="Vantilatör" subtitle="Ortam Soğutma" icon="🌀" active={homeData.fan} onClick={() => toggleHome("fan")} colorClass="bg-cyan-500/20 border-cyan-500/50 text-cyan-200" />
-                <ModernWidget title="Akıllı Priz" subtitle="Eğlence / TV" icon="📺" active={homeData.plug} onClick={() => toggleHome("plug")} colorClass="bg-emerald-500/20 border-emerald-500/50 text-emerald-200" />
+            <div className="glass-panel p-6 rounded-[24px] border border-white/10 shadow-xl">
+              <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-6 flex items-center gap-2">
+                <span>📱</span> Ev Aletleri & Güvenlik Kontrol Merkezi
+              </h3>
+              
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <ModernWidget title="Salon Işığı" subtitle="İç Aydınlatma 1" icon="💡" active={homeData.light1} onClick={() => toggleHome("light1")} colorClass="bg-amber-500/20 border-amber-500/50 text-amber-200" />
+                <ModernWidget title="Mutfak Işığı" subtitle="İç Aydınlatma 2" icon="💡" active={homeData.light2} onClick={() => toggleHome("light2")} colorClass="bg-yellow-500/20 border-yellow-500/50 text-yellow-200" />
+                <ModernWidget title="Bahçe Işığı" subtitle="Dış Aydınlatma" icon="🌞" active={homeData.gardenLight} onClick={() => toggleHome("gardenLight")} colorClass="bg-orange-500/20 border-orange-500/50 text-orange-200" />
+                
+                <ModernWidget title="Hırsız Alarmı" subtitle="HC-SR04 Güvenlik" icon="🚨" active={homeData.alarm} onClick={() => toggleHome("alarm")} colorClass="bg-red-500/20 border-red-500/50 text-red-200" />
+                <ModernWidget title="Bahçe Kapısı" subtitle="Servo Motor" icon="🚧" active={homeData.gate} onClick={() => toggleHome("gate")} colorClass="bg-emerald-500/20 border-emerald-500/50 text-emerald-200" />
+                <ModernWidget title="Vantilatör" subtitle="İç Mekan Soğutma" icon="🌀" active={homeData.fan} onClick={() => toggleHome("fan")} colorClass="bg-cyan-500/20 border-cyan-500/50 text-cyan-200" />
               </div>
             </div>
           </main>
