@@ -1,8 +1,10 @@
 /*
-  MUCİT AKADEMİSİ | Akıllı Ev IoT Sistemi (RGB Mood Aydınlatma)
+  MUCİT AKADEMİSİ | Akıllı Ev IoT Sistemi (ORTAK ANOT RGB FİNAL)
   -------------------------------------------------------------
-  Bu kod, Ortak Katot RGB LED ile çalışacak şekilde optimize edilmiştir.
-  Fan iptal edilmiş, yerine D23-D32-D15 pinleri üzerinden RGB LED eklenmiştir.
+  Bu kod, Ortak Anot RGB LED ile çalışacak şekilde optimize edilmiştir.
+  Pinler: RED=15, GREEN=32, BLUE=23 (Ortak Anot Test Koduna Göre)
+  Mantık: Ortak Anot olduğu için sinyaller terslenmiştir (255 - Değer).
+  Güvenlik: Alarm aktifken kapı 0 dereceye (Kapalı) zorlanır.
 */
 
 #include <WiFi.h>
@@ -23,18 +25,17 @@
 
 // --- PİN TANIMLAMALARI ---
 #define LED_SALON 19     
-#define LED_RGB_ENABLE 21 // Üst kat butonu ile RGB'yi açıp kapatırız
 #define LED_BAHCE 22     
-#define SERVO_PIN 14     // Bahçe kapısı servosu
+#define SERVO_PIN 33     // Servo için en stabil pin D33
 #define BUZZER_PIN 27    
 #define IR_SENSOR_PIN 26 
 #define DHTPIN 4         
 #define DHTTYPE DHT11
 
-// --- RGB LED PİNLERİ (Ortak Katot) ---
-#define RGB_R 23  
+// --- RGB LED PİNLERİ (Ortak Anot) ---
+#define RGB_R 15  
 #define RGB_G 32  
-#define RGB_B 15  
+#define RGB_B 23  
 
 FirebaseData fbdoRead, fbdoWrite;
 FirebaseAuth auth;
@@ -44,7 +45,7 @@ DHT dht(DHTPIN, DHTTYPE);
 
 String documentPath = "artifacts/" + String(APP_ID) + "/public/data/home/status";
 
-// Web sitesinden gelen HEX (#RRGGBB) kodunu LED'e yansıtan fonksiyon
+// Ortak Anot LED için renk uygulama fonksiyonu (Ters Mantık)
 void applyRGBColor(String hex) {
   if (hex.length() < 6) return;
   if (hex.startsWith("#")) hex = hex.substring(1);
@@ -54,13 +55,12 @@ void applyRGBColor(String hex) {
   int g = (number >> 8) & 0xFF;
   int b = number & 0xFF;
   
-  // Ortak Katot olduğu için direkt PWM değerini (0-255) gönderiyoruz
-  analogWrite(RGB_R, r);
-  analogWrite(RGB_G, g);
-  analogWrite(RGB_B, b);
+  // ORTAK ANOT: 255'ten çıkararak tersliyoruz
+  analogWrite(RGB_R, 255 - r);
+  analogWrite(RGB_G, 255 - g);
+  analogWrite(RGB_B, 255 - b);
 }
 
-// Firebase'den Mantıksal (True/False) veri okuma
 bool checkState(String payload, String key) {
   int pos = payload.indexOf("\"" + key + "\"");
   if (pos == -1) return false;
@@ -69,7 +69,6 @@ bool checkState(String payload, String key) {
   return payload.substring(boolPos, boolPos + 30).indexOf("true") > -1;
 }
 
-// Firebase'den Yazı (Renk Kodu) veri okuma
 String checkString(String payload, String key) {
   int pos = payload.indexOf("\"" + key + "\"");
   if (pos == -1) return "";
@@ -87,7 +86,6 @@ void setup() {
   dht.begin();
   
   pinMode(LED_SALON, OUTPUT);
-  pinMode(LED_RGB_ENABLE, OUTPUT);
   pinMode(LED_BAHCE, OUTPUT);
   pinMode(BUZZER_PIN, OUTPUT);
   pinMode(IR_SENSOR_PIN, INPUT);
@@ -96,13 +94,18 @@ void setup() {
   pinMode(RGB_G, OUTPUT);
   pinMode(RGB_B, OUTPUT);
 
+  // Ortak Anot: Başlangıçta hepsini HIGH yaparak LED'i söndür
+  digitalWrite(RGB_R, HIGH);
+  digitalWrite(RGB_G, HIGH);
+  digitalWrite(RGB_B, HIGH);
+
   ESP32PWM::allocateTimer(0);
   bahceKapisi.setPeriodHertz(50);
   bahceKapisi.attach(SERVO_PIN, 500, 2400); 
   bahceKapisi.write(0);
 
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  WiFi.setSleep(false); // WiFi kopmalarını engeller
+  WiFi.setSleep(false); 
   WiFi.setAutoReconnect(true);
 
   while (WiFi.status() != WL_CONNECTED) { delay(500); Serial.print("."); }
@@ -112,6 +115,7 @@ void setup() {
   config.signer.test_mode = true;
   Firebase.begin(&config, &auth);
   Firebase.reconnectWiFi(true);
+  Serial.println("Firebase Hazir.");
 }
 
 void loop() {
@@ -126,7 +130,7 @@ void loop() {
       String payload = fbdoRead.payload();
       
       bool l1 = checkState(payload, "light1");
-      bool l2 = checkState(payload, "light2"); // RGB Mood Aydınlatma Kontrolü
+      bool l2 = checkState(payload, "light2"); // RGB Master
       bool gl = checkState(payload, "gardenLight");
       bool gate = checkState(payload, "gate");
       bool alarm = checkState(payload, "alarm");
@@ -138,19 +142,24 @@ void loop() {
       
       // RGB KONTROLÜ
       if (l2) {
-        applyRGBColor(rgbHex); // Web'den seçilen rengi yak
+        applyRGBColor(rgbHex); 
       } else {
-        applyRGBColor("#000000"); // Kapalıyken söndür
+        digitalWrite(RGB_R, HIGH);
+        digitalWrite(RGB_G, HIGH);
+        digitalWrite(RGB_B, HIGH);
       }
       
-      // Servo (0 - 170 Derece)
+      // Servo Kontrolü (Güvenlik: Alarm açıksa kapı her zaman kapalı kalmalı)
       static bool lastG = false;
-      if (gate != lastG) {
+      if (alarm) {
+        bahceKapisi.write(0); 
+        lastG = false;
+      } else if (gate != lastG) {
         bahceKapisi.write(gate ? 170 : 0);
         lastG = gate;
       }
 
-      // Hırsız Alarmı
+      // Hırsız Alarmı Tetiklenme
       if (alarm && digitalRead(IR_SENSOR_PIN) == LOW) {
            Serial.println("!!! ALARM TETIKLENDI !!!");
            Firebase.Firestore.patchDocument(&fbdoWrite, FIREBASE_PROJECT_ID, "", documentPath.c_str(), "{\"fields\":{\"alarmTriggered\":{\"booleanValue\":true}}}", "alarmTriggered");
@@ -162,7 +171,7 @@ void loop() {
            Firebase.Firestore.patchDocument(&fbdoWrite, FIREBASE_PROJECT_ID, "", documentPath.c_str(), "{\"fields\":{\"alarmTriggered\":{\"booleanValue\":false},\"alarm\":{\"booleanValue\":false}}}", "alarmTriggered,alarm");
       }
 
-      // Müzik Çalar
+      // Müzik
       static bool lastM = false;
       if (music && !lastM) {
          int m[] = {262, 262, 392, 392, 440, 440, 392, 349, 349, 330, 330, 294, 294, 262};
