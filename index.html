@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Mucit Akademisi | MUCİT ÜSSÜ v2.8</title>
+  <title>Mucit Akademisi | MUCİT ÜSSÜ v2.9</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -17,8 +17,7 @@
     .loader { width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-bottom-color: #3b82f6; border-radius: 50%; display: inline-block; animation: spin 1s linear infinite; }
     @keyframes spin { 100% { transform: rotate(360deg); } }
     
-    /* Tema Geçiş Efektleri */
-    .theme-transition { transition: all 0.5s ease; }
+    .theme-transition { transition: all 0.4s ease; }
   </style>
 
   <script type="module">
@@ -50,43 +49,42 @@
   <script type="text/babel">
     const { useEffect, useState } = React;
 
-    // TEMA AYARLARI
     const THEMES = {
       dark: {
         bg: "bg-[#020617]",
-        panel: "bg-slate-900/70 border-white/5",
+        panel: "bg-slate-900/80 border-white/5 shadow-2xl",
         text: "text-white",
         subText: "text-slate-400",
-        metric: "bg-slate-900/50 border-white/5",
-        header: "bg-slate-900/70 border-white/5"
+        metric: "bg-slate-900/60 border-white/10",
+        header: "bg-slate-900/90 border-white/5 shadow-2xl"
       },
       light: {
-        bg: "bg-slate-50",
-        panel: "bg-white/80 border-slate-200",
+        bg: "bg-slate-100",
+        panel: "bg-white border-slate-300 shadow-lg",
         text: "text-slate-900",
-        subText: "text-slate-500",
-        metric: "bg-white border-slate-200",
-        header: "bg-white/90 border-slate-200 shadow-sm"
+        subText: "text-slate-600",
+        metric: "bg-slate-50 border-slate-200",
+        header: "bg-white border-slate-200 shadow-md"
       },
       cheerful: {
-        bg: "bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500",
-        panel: "bg-white/20 border-white/30 backdrop-blur-md",
+        bg: "bg-gradient-to-br from-blue-600 via-violet-600 to-fuchsia-600",
+        panel: "bg-white/30 border-white/40 backdrop-blur-xl shadow-2xl",
         text: "text-white",
-        subText: "text-indigo-100",
-        metric: "bg-white/30 border-white/20",
-        header: "bg-white/20 border-white/30 shadow-lg"
+        subText: "text-blue-50",
+        metric: "bg-white/20 border-white/20",
+        header: "bg-white/20 border-white/30 shadow-2xl backdrop-blur-md"
       }
     };
 
     function MetricCard({ title, value, unit, emoji, isDanger, isWarning, themeStyles }) {
       let colorClass = themeStyles.metric;
-      if (isDanger) colorClass = "border-red-500/50 bg-red-500/10 text-red-400";
-      else if (isWarning) colorClass = "border-amber-500/50 bg-amber-500/10 text-amber-400";
+      if (isDanger) colorClass = "border-red-500/50 bg-red-500/20 text-red-600 dark:text-red-400 font-bold";
+      else if (isWarning) colorClass = "border-amber-500/50 bg-amber-500/20 text-amber-600 dark:text-amber-400 font-bold";
 
       return (
         <div className={`rounded-2xl p-4 flex flex-col items-center justify-center border theme-transition ${colorClass} ${themeStyles.text}`}>
-          <div className="text-4xl mb-2 drop-shadow-lg">{emoji}</div>
-          <div className={`text-[10px] font-bold uppercase tracking-widest opacity-60 mb-1`}>{title}</div>
+          <div className="text-4xl mb-2 drop-shadow-md">{emoji}</div>
+          <div className={`text-[10px] font-black uppercase tracking-widest opacity-60 mb-1`}>{title}</div>
           <div className="text-3xl font-black">{value}<span className="text-sm opacity-50 ml-1">{unit}</span></div>
         </div>
       );
@@ -94,15 +92,15 @@
 
     function ModernWidget({ title, icon, active, onClick, colorClass, subtitle, themeStyles, children }) {
       return (
-        <div className={`relative overflow-hidden p-5 rounded-[24px] border text-left theme-transition ${active ? colorClass : themeStyles.panel}`}>
+        <div className={`relative overflow-hidden p-5 rounded-[28px] border text-left theme-transition ${active ? colorClass : themeStyles.panel}`}>
           <div className="flex justify-between items-start mb-4">
-             <div onClick={onClick} className={`text-4xl transition-transform duration-300 btn-touch ${active ? 'scale-110 drop-shadow-[0_0_15px_currentColor]' : 'grayscale opacity-30'}`}>{icon}</div>
-             <div onClick={onClick} className={`w-12 h-6 rounded-full p-1 transition-all cursor-pointer ${active ? 'bg-white/30' : 'bg-slate-800/40'}`}>
-                <div className={`w-4 h-4 bg-white rounded-full transition-all shadow-sm ${active ? 'translate-x-6' : 'translate-x-0'}`}></div>
+             <div onClick={onClick} className={`text-4xl transition-transform duration-300 btn-touch ${active ? 'scale-110 drop-shadow-[0_0_15px_currentColor]' : 'grayscale opacity-40'}`}>{icon}</div>
+             <div onClick={onClick} className={`w-12 h-6 rounded-full p-1 transition-all cursor-pointer ${active ? 'bg-white/40' : 'bg-black/20'}`}>
+                <div className={`w-4 h-4 bg-white rounded-full transition-all shadow-md ${active ? 'translate-x-6' : 'translate-x-0'}`}></div>
              </div>
           </div>
           <div className={`font-black text-sm tracking-wide ${active ? 'text-white' : themeStyles.text}`}>{title}</div>
-          <div className={`text-[9px] uppercase tracking-widest opacity-50 mt-1 font-bold mb-2`}>{subtitle}</div>
+          <div className={`text-[10px] uppercase tracking-widest opacity-60 mt-1 font-black mb-2`}>{subtitle}</div>
           {children}
         </div>
       );
@@ -110,52 +108,51 @@
 
     function HomeVisualizer({ data, themeStyles }) {
       return (
-        <div className="mb-8 w-full max-w-[700px] mx-auto text-center">
-          <div className={`text-xs font-bold uppercase tracking-widest mb-3 flex items-center justify-center gap-2 ${themeStyles.subText}`}>
-            <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span> MUCİT ÜSSÜ: MERKEZİ GÖRÜNÜM
+        <div className="mb-8 w-full max-w-[720px] mx-auto text-center">
+          <div className={`text-[10px] font-black uppercase tracking-[0.2em] mb-4 flex items-center justify-center gap-2 ${themeStyles.subText}`}>
+            <span className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse"></span> MUCİT ÜSSÜ: CANLI VERİ AKIŞI
           </div>
-          <div className={`w-full h-[360px] rounded-[40px] border-4 p-6 shadow-2xl flex relative overflow-hidden gap-6 theme-transition ${themeStyles.panel}`}>
+          <div className={`w-full h-[380px] rounded-[48px] border-4 p-6 shadow-2xl flex relative overflow-hidden gap-6 theme-transition ${themeStyles.panel}`}>
              <div className="w-[55%] flex flex-col relative h-full">
                 <div className="relative flex justify-center w-full mb-1">
-                   <div className="w-0 h-0 border-l-[140px] border-r-[140px] border-b-[60px] border-l-transparent border-r-transparent border-b-slate-700/50"></div>
+                   <div className="w-0 h-0 border-l-[140px] border-r-[140px] border-b-[60px] border-l-transparent border-r-transparent border-b-slate-700/40"></div>
                    <div className={`absolute top-[15px] transition-all duration-500 ${data.alarm ? 'text-red-500 drop-shadow-[0_0_20px_#ef4444]' : 'text-slate-600 opacity-20'}`}>
-                      <div className={`text-4xl ${data.alarm ? 'animate-pulse' : ''}`}>🚨</div>
+                      <div className={`text-5xl ${data.alarm ? 'animate-pulse' : ''}`}>🚨</div>
                    </div>
                 </div>
                 
-                <div className={`flex-1 rounded-t-3xl border border-white/10 flex items-center justify-center relative transition-all duration-500`}
-                     style={{ backgroundColor: data.light2 ? (data.rgbHex || '#fbbf24') + '22' : 'rgba(0,0,0,0.1)' }}>
-                   <div className="absolute top-2 left-3 text-[10px] font-black opacity-30 uppercase">ÜST KAT (ATMOSFER)</div>
-                   <div className={`text-6xl transition-all duration-500 ${data.light2 ? 'scale-110' : 'opacity-20 grayscale'}`} style={{ filter: data.light2 ? `drop-shadow(0 0 30px ${data.rgbHex})` : 'none', color: data.light2 ? data.rgbHex : '#475569' }}>🌈</div>
+                <div className={`flex-1 rounded-t-[32px] border border-black/10 dark:border-white/10 flex items-center justify-center relative transition-all duration-500 shadow-inner`}
+                     style={{ backgroundColor: data.light2 ? (data.rgbHex || '#fbbf24') + '44' : 'rgba(0,0,0,0.15)' }}>
+                   <div className="absolute top-2 left-3 text-[10px] font-black opacity-40 uppercase">ÜST KAT (ATMOSFER)</div>
+                   <div className={`text-7xl transition-all duration-500 ${data.light2 ? 'scale-110' : 'opacity-20 grayscale'}`} style={{ filter: data.light2 ? `drop-shadow(0 0 35px ${data.rgbHex})` : 'none', color: data.light2 ? data.rgbHex : '#475569' }}>🌈</div>
                 </div>
 
-                <div className="h-3 bg-slate-700/30 mx-1"></div>
+                <div className="h-4 bg-slate-700/20 mx-1 flex items-center justify-center overflow-hidden">
+                   <div className="w-full h-[1px] bg-white/10"></div>
+                </div>
 
                 <div className="flex-1 flex gap-2">
-                   <div className={`flex-1 rounded-bl-3xl border border-white/10 flex flex-col items-center justify-center relative transition-colors duration-500 ${data.light3 ? 'bg-amber-500/20' : 'bg-black/10'}`}>
-                      <div className="absolute top-2 left-3 text-[8px] font-black opacity-30 uppercase text-left">ODA 2</div>
-                      <div className={`text-4xl ${data.light3 ? 'drop-shadow-[0_0_20px_#fbbf24]' : 'opacity-10 grayscale'}`}>💡</div>
+                   <div className={`flex-1 rounded-bl-[32px] border border-black/10 dark:border-white/10 flex flex-col items-center justify-center relative transition-colors duration-500 ${data.light3 ? 'bg-amber-500/30' : 'bg-black/10'}`}>
+                      <div className="absolute top-2 left-3 text-[8px] font-black opacity-40 uppercase text-left">ODA 2</div>
+                      <div className={`text-5xl transition-all duration-500 ${data.light3 ? 'drop-shadow-[0_0_25px_#fbbf24] scale-105' : 'opacity-10 grayscale'}`}>💡</div>
                    </div>
-                   <div className={`flex-1 rounded-br-3xl border border-white/10 flex flex-col items-center justify-center relative transition-colors duration-500 ${data.light1 ? 'bg-amber-500/20' : 'bg-black/10'}`}>
-                      <div className="absolute top-2 left-3 text-[8px] font-black opacity-30 uppercase text-left">SALON</div>
-                      <div className={`text-4xl ${data.light1 ? 'drop-shadow-[0_0_20px_#fbbf24]' : 'opacity-10 grayscale'}`}>💡</div>
-                      <div className={`absolute bottom-2 left-2 text-xl transition-all ${data.music ? 'animate-bounce' : 'opacity-0'}`}>🎵</div>
+                   <div className={`flex-1 rounded-br-[32px] border border-black/10 dark:border-white/10 flex flex-col items-center justify-center relative transition-colors duration-500 ${data.light1 ? 'bg-amber-500/30' : 'bg-black/10'}`}>
+                      <div className="absolute top-2 left-3 text-[8px] font-black opacity-40 uppercase text-left">SALON</div>
+                      <div className={`text-5xl transition-all duration-500 ${data.light1 ? 'drop-shadow-[0_0_25px_#fbbf24] scale-105' : 'opacity-10 grayscale'}`}>💡</div>
+                      <div className={`absolute bottom-3 right-3 text-2xl transition-all ${data.music ? 'animate-bounce' : 'opacity-0'}`}>🎵</div>
                    </div>
                 </div>
              </div>
 
-             <div className={`w-[45%] rounded-3xl border border-white/10 relative flex flex-col justify-end overflow-hidden transition-all duration-1000 ${data.gardenLight ? 'bg-amber-500/10' : 'bg-black/5'}`}>
+             <div className={`w-[45%] rounded-[40px] border border-black/10 dark:border-white/10 relative flex flex-col justify-end overflow-hidden transition-all duration-1000 ${data.gardenLight ? 'bg-amber-500/20 shadow-inner' : 'bg-black/10'}`}>
                 <div className="absolute top-12 right-10 flex flex-col items-center text-center">
-                   <div className={`text-6xl transition-all ${data.gardenLight ? 'text-orange-400 drop-shadow-[0_0_40px_#f97316]' : 'opacity-20 grayscale'}`}>🌞</div>
-                   <div className="w-2 h-32 bg-slate-800/40"></div>
+                   <div className={`text-7xl transition-all ${data.gardenLight ? 'text-orange-400 drop-shadow-[0_0_50px_#f97316]' : 'opacity-10 grayscale'}`}>🌞</div>
+                   <div className="w-3 h-32 bg-slate-800/40 rounded-full mt-2"></div>
                 </div>
-                <div className="w-full h-12 bg-emerald-950/20 border-t-4 border-emerald-900/30 flex items-end justify-start px-4 relative z-10">
-                   <div className="flex flex-col items-center justify-end h-full relative w-20 sm:w-24">
-                      <div className={`absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded transition-colors ${data.gate ? 'text-emerald-400 bg-emerald-500/20' : 'text-red-400 bg-red-500/20'}`}>
-                        {data.gate ? 'AÇIK' : 'KAPALI'}
-                      </div>
-                      <div className={`absolute bottom-3 left-2 sm:left-4 w-16 sm:w-20 h-2.5 rounded transition-all duration-700 origin-left ${data.gate ? '-rotate-90 bg-emerald-500 shadow-[0_0_15px_#10b981]' : 'rotate-0 bg-red-500 shadow-[0_0_15px_#ef4444]'}`}></div>
-                      <div className="w-4 h-6 bg-slate-800/60 rounded-t z-10 border border-slate-700 shadow-lg"></div>
+                <div className="w-full h-14 bg-emerald-950/30 border-t-4 border-emerald-900/40 flex items-end justify-start px-5 relative z-10">
+                   <div className="flex flex-col items-center justify-end h-full relative w-24">
+                      <div className={`absolute bottom-4 left-3 w-20 h-3 rounded-full transition-all duration-700 origin-left shadow-lg ${data.gate ? '-rotate-90 bg-emerald-500' : 'rotate-0 bg-red-500'}`}></div>
+                      <div className="w-5 h-8 bg-slate-800 rounded-t-lg z-10 border border-slate-700 shadow-xl"></div>
                    </div>
                 </div>
              </div>
@@ -209,7 +206,6 @@
         return () => unsubHome();
       }, [user]);
 
-      // Body rengini tema değişiminde güncelle
       useEffect(() => {
         document.body.className = themeStyles.bg;
       }, [theme]);
@@ -218,7 +214,11 @@
         if (!user) return;
         const newValue = value !== null ? value : !homeData[field];
         let updates = { [field]: newValue };
-        if (field === "alarm" && newValue === true) updates.gate = false;
+
+        if (field === "alarm" && newValue === true) {
+          updates.gate = false;
+        }
+
         const ref = window.FB.doc(window.FB.db, "artifacts", window.APP_ID, "public", "data", "home", "status");
         await window.FB.setDoc(ref, updates, { merge: true }).catch(console.error);
       };
@@ -228,14 +228,14 @@
       if (!loggedIn) {
         return (
           <div className={`min-h-screen flex items-center justify-center px-6 theme-transition ${themeStyles.bg}`}>
-            <div className={`w-full max-w-sm rounded-[32px] p-8 shadow-2xl border text-center flex flex-col items-center theme-transition ${themeStyles.panel}`}>
-              <div className="w-24 h-24 rounded-3xl bg-white flex items-center justify-center mb-6 shadow-2xl p-2">
+            <div className={`w-full max-w-sm rounded-[40px] p-10 shadow-2xl border text-center flex flex-col items-center theme-transition ${themeStyles.panel}`}>
+              <div className="w-28 h-28 rounded-[32px] bg-white flex items-center justify-center mb-8 shadow-2xl p-2.5">
                 <img src="mucitlogo.png" alt="Logo" className="w-full h-full object-contain" />
               </div>
               <h1 className={`text-4xl font-black mb-2 tracking-tighter uppercase leading-tight ${themeStyles.text}`}>MUCİT ÜSSÜ</h1>
-              <p className="text-blue-500 text-[10px] font-bold tracking-[0.3em] mb-8 uppercase">YENİ NESİL KONTROL SİSTEMİ</p>
-              <input type="password" maxLength="4" value={pin} onChange={(e) => setPin(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && pin === "0000" && setLoggedIn(true)} placeholder="ŞİFRE" className="w-full rounded-2xl bg-slate-800/20 border border-white/10 p-5 text-center text-xl text-white mb-4 font-black outline-none focus:border-blue-600 transition-colors" />
-              <button onClick={() => pin === "0000" && setLoggedIn(true)} className="w-full rounded-2xl bg-blue-600 text-white py-5 font-black uppercase tracking-wider btn-touch shadow-lg shadow-blue-900/50">ÜSSÜ AKTİFLEŞTİR</button>
+              <p className="text-blue-500 text-[11px] font-black tracking-[0.4em] mb-10 uppercase opacity-80">KOMUTA MERKEZİ GİRİŞİ</p>
+              <input type="password" maxLength="4" value={pin} onChange={(e) => setPin(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && pin === "0000" && setLoggedIn(true)} placeholder="GÜVENLİK ANAHTARI" className={`w-full rounded-3xl bg-slate-500/10 border border-black/10 dark:border-white/10 p-6 text-center text-xl mb-6 font-black outline-none focus:border-blue-600 transition-colors ${themeStyles.text}`} />
+              <button onClick={() => pin === "0000" && setLoggedIn(true)} className="w-full rounded-3xl bg-blue-600 text-white py-6 font-black uppercase tracking-widest btn-touch shadow-xl shadow-blue-600/30">ÜSSÜ AKTİFLEŞTİR</button>
             </div>
           </div>
         );
@@ -244,33 +244,33 @@
       return (
         <div className={`min-h-screen pb-12 theme-transition ${themeStyles.bg}`}>
           {homeData.alarmTriggered && (
-             <div className="fixed inset-0 z-[100] bg-red-950/95 backdrop-blur-xl flex flex-col items-center justify-center p-6 text-center animate-pulse">
-                <div className="text-9xl mb-6 text-white drop-shadow-[0_0_50px_red]">🚨</div>
-                <h1 className="text-6xl font-black text-white mb-4 uppercase tracking-tighter">İHLAL TESPİT EDİLDİ!</h1>
-                <p className="text-red-400 font-bold mb-12 tracking-widest uppercase">Güvenlik Protokolü Aktif</p>
-                <button onClick={() => toggleHome("alarmTriggered", false)} className="px-12 py-6 bg-white text-red-950 rounded-3xl font-black text-2xl uppercase tracking-widest btn-touch shadow-2xl">SİRENİ DURDUR</button>
+             <div className="fixed inset-0 z-[100] bg-red-600/95 backdrop-blur-2xl flex flex-col items-center justify-center p-6 text-center animate-pulse">
+                <div className="text-[12rem] mb-6 text-white drop-shadow-[0_0_80px_red]">🚨</div>
+                <h1 className="text-6xl md:text-8xl font-black text-white mb-4 uppercase tracking-tighter">İHLAL TESPİT EDİLDİ!</h1>
+                <p className="text-red-100 font-black mb-12 tracking-[0.5em] uppercase text-xl">Güvenlik Protokolü Aktif</p>
+                <button onClick={() => toggleHome("alarmTriggered", false)} className="px-16 py-8 bg-white text-red-700 rounded-[40px] font-black text-3xl uppercase tracking-widest btn-touch shadow-[0_20px_60px_rgba(0,0,0,0.4)]">SİRENİ DURDUR</button>
              </div>
           )}
 
-          <header className={`px-6 py-4 sticky top-0 z-50 flex items-center justify-between shadow-2xl theme-transition ${themeStyles.header}`}>
+          <header className={`px-6 py-5 sticky top-0 z-50 flex items-center justify-between shadow-2xl theme-transition ${themeStyles.header}`}>
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center shadow-lg overflow-hidden p-1.5">
+              <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center shadow-lg overflow-hidden p-2">
                 <img src="mucitlogo.png" className="w-full h-full object-contain" alt="Logo" />
               </div>
-              <div className="hidden sm:block">
-                <div className={`text-xl font-black uppercase tracking-tighter leading-none ${themeStyles.text}`}>MUCİT ÜSSÜ</div>
-                <div className="text-[9px] font-bold text-blue-500 uppercase tracking-widest mt-1">Gelecek Teknoloji Birimi</div>
+              <div>
+                <div className={`text-2xl font-black uppercase tracking-tighter leading-none ${themeStyles.text}`}>MUCİT ÜSSÜ</div>
+                <div className="text-[10px] font-black text-blue-600 uppercase tracking-widest mt-1.5 opacity-80 text-center">Gelecek Teknoloji Birimi</div>
               </div>
             </div>
 
-            {/* TEMA SEÇİCİ */}
-            <div className="flex bg-slate-900/20 p-1 rounded-2xl border border-white/5">
-              <button onClick={() => setTheme("dark")} className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${theme === 'dark' ? 'bg-slate-800 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}>🌙</button>
-              <button onClick={() => setTheme("light")} className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${theme === 'light' ? 'bg-white text-slate-900 shadow-lg' : 'text-slate-500 hover:text-slate-600'}`}>☀️</button>
-              <button onClick={() => setTheme("cheerful")} className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${theme === 'cheerful' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-500 hover:text-white'}`}>🌈</button>
+            <div className="flex items-center gap-3">
+              <div className="flex bg-black/10 dark:bg-white/5 p-1.5 rounded-2xl border border-black/5 dark:border-white/5">
+                <button onClick={() => setTheme("dark")} className={`w-10 h-10 rounded-xl text-lg flex items-center justify-center transition-all ${theme === 'dark' ? 'bg-slate-800 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}>🌙</button>
+                <button onClick={() => setTheme("light")} className={`w-10 h-10 rounded-xl text-lg flex items-center justify-center transition-all ${theme === 'light' ? 'bg-white text-slate-900 shadow-lg' : 'text-slate-500 hover:text-slate-600'}`}>☀️</button>
+                <button onClick={() => setTheme("cheerful")} className={`w-10 h-10 rounded-xl text-lg flex items-center justify-center transition-all ${theme === 'cheerful' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-500 hover:text-white'}`}>🌈</button>
+              </div>
+              <button onClick={() => setLoggedIn(false)} className="w-10 h-10 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 flex items-center justify-center btn-touch shadow-inner" title="GÜVENLİ ÇIKIŞ">🔒</button>
             </div>
-
-            <button onClick={() => setLoggedIn(false)} className="px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-[10px] font-black uppercase text-red-500 tracking-widest btn-touch">GÜVENLİ ÇIKIŞ</button>
           </header>
 
           <main className="max-w-4xl mx-auto px-4 py-8 animate-[fadeIn_0.3s_ease-out]">
@@ -278,23 +278,26 @@
             
             <div className="grid grid-cols-2 gap-4 mb-8">
               <MetricCard title="Üs Sıcaklığı" value={homeData.temp} unit="°C" emoji="🌡️" isDanger={homeData.temp > 28} isWarning={homeData.temp < 18} themeStyles={themeStyles} />
-              <div className={`rounded-3xl p-4 border flex flex-col items-center justify-center relative overflow-hidden theme-transition ${themeStyles.panel}`}>
-                 <div className={`text-[10px] font-bold uppercase tracking-widest opacity-50 mb-2 ${themeStyles.text}`}>ATMOSFER RENGİ</div>
-                 <input type="color" value={homeData.rgbHex} onChange={(e) => toggleHome("rgbHex", e.target.value)} className="w-full h-12 rounded-xl cursor-pointer bg-transparent border-none outline-none" />
+              <div className={`rounded-[32px] p-5 border flex flex-col items-center justify-center relative overflow-hidden theme-transition ${themeStyles.panel}`}>
+                 <div className={`text-[10px] font-black uppercase tracking-widest opacity-60 mb-3 ${themeStyles.text}`}>ATMOSFER RENGİ</div>
+                 <input type="color" value={homeData.rgbHex} onChange={(e) => toggleHome("rgbHex", e.target.value)} className="w-full h-14 rounded-2xl cursor-pointer bg-transparent border-none outline-none hover:scale-105 transition-transform" />
               </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              <ModernWidget title="ALT KAT 2. ODA" icon="💡" active={homeData.light3} onClick={() => toggleHome("light3")} colorClass="bg-yellow-500/30 border-yellow-500/50" subtitle="IŞIK 2 (D5)" themeStyles={themeStyles} />
-              <ModernWidget title="SALON IŞIĞI" icon="💡" active={homeData.light1} onClick={() => toggleHome("light1")} colorClass="bg-amber-500/30 border-amber-500/50" subtitle="IŞIK 1 (D19)" themeStyles={themeStyles} />
-              <ModernWidget title="ÜST KAT (RGB)" icon="🌈" active={homeData.light2} onClick={() => toggleHome("light2")} colorClass="bg-blue-500/30 border-blue-500/50" subtitle="ATMOSFER MODU" themeStyles={themeStyles}>
-                 <div className={`h-1 w-full mt-2 rounded-full transition-opacity ${homeData.light2 ? 'opacity-100' : 'opacity-20'}`} style={{backgroundColor: homeData.rgbHex}}></div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
+              <ModernWidget title="ALT KAT 2. ODA" icon="💡" active={homeData.light3} onClick={() => toggleHome("light3")} colorClass="bg-amber-400 border-amber-500 shadow-[0_10px_30px_rgba(251,191,36,0.3)]" subtitle="ODA AYDINLATMASI" themeStyles={themeStyles} />
+              <ModernWidget title="SALON IŞIĞI" icon="💡" active={homeData.light1} onClick={() => toggleHome("light1")} colorClass="bg-amber-400 border-amber-500 shadow-[0_10px_30px_rgba(251,191,36,0.3)]" subtitle="SALON AYDINLATMASI" themeStyles={themeStyles} />
+              
+              <ModernWidget title="ÜST KAT (RGB)" icon="🌈" active={homeData.light2} onClick={() => toggleHome("light2")} colorClass="bg-blue-600 border-blue-500 shadow-[0_10px_30px_rgba(37,99,235,0.3)]" subtitle="ATMOSFER AYARLARI" themeStyles={themeStyles}>
+                 <div className={`h-2 w-full mt-2 rounded-full transition-opacity border border-white/20 ${homeData.light2 ? 'opacity-100' : 'opacity-20'}`} style={{backgroundColor: homeData.rgbHex}}></div>
               </ModernWidget>
-              <ModernWidget title="BAHÇE AYDINLATMA" icon="🌞" active={homeData.gardenLight} onClick={() => toggleHome("gardenLight")} colorClass="bg-orange-500/30 border-orange-500/50" subtitle="DIŞ MEKAN (D22)" themeStyles={themeStyles} />
-              <ModernWidget title="GÜVENLİK RADARI" icon="🚨" active={homeData.alarm} onClick={() => toggleHome("alarm")} colorClass="bg-red-500/30 border-red-500/50" subtitle="HIRSIZ ALARMI (D26)" themeStyles={themeStyles} />
-              <ModernWidget title="GİRİŞ BARİYERİ" icon="🚧" active={homeData.gate} onClick={() => toggleHome("gate")} colorClass="bg-emerald-500/30 border-emerald-500/50" subtitle="SERVO KONTROL (D33)" themeStyles={themeStyles} />
-              <div className="col-span-2 md:col-span-1">
-                <ModernWidget title="AKILLI SES SİSTEMİ" icon="🎵" active={homeData.music} onClick={() => toggleHome("music")} colorClass="bg-purple-500/30 border-purple-500/50" subtitle="BUZZER MODÜLÜ (D27)" themeStyles={themeStyles} />
+
+              <ModernWidget title="DIŞ ALAN IŞIĞI" icon="🌞" active={homeData.gardenLight} onClick={() => toggleHome("gardenLight")} colorClass="bg-orange-500 border-orange-600 shadow-[0_10px_30px_rgba(249,115,22,0.3)]" subtitle="GÜVENLİK AYDINLATMASI" themeStyles={themeStyles} />
+              <ModernWidget title="GÜVENLİK RADARI" icon="🚨" active={homeData.alarm} onClick={() => toggleHome("alarm")} colorClass="bg-red-600 border-red-700 shadow-[0_10px_30px_rgba(220,38,38,0.3)]" subtitle="AKTİF KORUMA SİSTEMİ" themeStyles={themeStyles} />
+              <ModernWidget title="GİRİŞ BARİYERİ" icon="🚧" active={homeData.gate} onClick={() => toggleHome("gate")} colorClass="bg-emerald-600 border-emerald-700 shadow-[0_10px_30px_rgba(5,150,105,0.3)]" subtitle="ERİŞİM DENETİMİ" themeStyles={themeStyles} />
+              
+              <div className="col-span-2 md:col-span-3">
+                <ModernWidget title="AKILLI SES SİSTEMİ" icon="🎵" active={homeData.music} onClick={() => toggleHome("music")} colorClass="bg-purple-600 border-purple-700 shadow-[0_10px_30px_rgba(147,51,234,0.3)]" subtitle="SESLİ BİLGİLENDİRME" themeStyles={themeStyles} />
               </div>
             </div>
           </main>
