@@ -48,10 +48,15 @@
   <script type="text/babel">
     const { useEffect, useState } = React;
 
-    function MetricCard({ title, value, unit, emoji, isDanger }) {
+    function MetricCard({ title, value, unit, emoji, isDanger, isWarning }) {
+      let colorClass = "border-white/5 bg-slate-800/50";
+      if (isDanger) colorClass = "border-red-500/50 bg-red-500/10 text-red-400";
+      else if (isWarning) colorClass = "border-amber-500/50 bg-amber-500/10 text-amber-400";
+      else colorClass = "border-emerald-500/30 bg-emerald-500/10 text-emerald-400";
+
       return (
-        <div className={`rounded-xl p-4 flex flex-col items-center justify-center border ${isDanger ? 'bg-red-500/10 border-red-500/50 text-red-400' : 'bg-slate-800/50 border-white/5 text-emerald-400'}`}>
-          <div className="text-4xl mb-2">{emoji}</div>
+        <div className={`rounded-xl p-4 flex flex-col items-center justify-center border transition-colors ${colorClass}`}>
+          <div className="text-4xl mb-2 drop-shadow-md">{emoji}</div>
           <div className="text-[10px] font-bold uppercase tracking-widest opacity-70 mb-1 text-white">{title}</div>
           <div className="text-3xl font-black">{value}<span className="text-sm opacity-60 ml-1">{unit}</span></div>
         </div>
@@ -78,10 +83,10 @@
       return (
         <div className="mb-8 w-full max-w-[700px] mx-auto text-center">
           <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center justify-center gap-2">
-            <span>👁️</span> Dijital Ev İkizi (Yerleşim Güncellendi)
+            <span>👁️</span> Dijital Ev İkizi (Yerleşim Senkronize)
           </div>
           <div className="w-full h-[360px] bg-slate-900/90 rounded-[32px] border-4 border-slate-800 p-6 shadow-2xl flex relative overflow-hidden gap-6">
-             <div className="w-[55%] flex flex-col relative h-full">
+             <div className="w-[55%] flex flex-col relative h-full text-center">
                 {/* Çatı ve Alarm */}
                 <div className="relative flex justify-center w-full mb-1">
                    <div className="w-0 h-0 border-l-[140px] border-r-[140px] border-b-[60px] border-l-transparent border-r-transparent border-b-slate-800"></div>
@@ -94,23 +99,21 @@
                 <div className={`flex-1 rounded-t-2xl border border-white/5 flex items-center justify-center relative transition-all duration-500`}
                      style={{ backgroundColor: data.light2 ? (data.rgbHex || '#fbbf24') + '33' : 'rgba(30, 41, 59, 0.8)' }}>
                    <div className="absolute top-2 left-3 text-[10px] font-black text-white/40 uppercase">Üst Kat (Mood LED)</div>
-                   <div className={`text-6xl transition-all ${data.light2 ? 'scale-110' : 'opacity-30 grayscale'}`} style={{ filter: data.light2 ? `drop-shadow(0 0 30px ${data.rgbHex})` : 'none', color: data.light2 ? data.rgbHex : '#475569' }}>🌈</div>
+                   <div className={`text-6xl transition-all duration-500 ${data.light2 ? 'scale-110' : 'opacity-30 grayscale'}`} style={{ filter: data.light2 ? `drop-shadow(0 0 30px ${data.rgbHex})` : 'none', color: data.light2 ? data.rgbHex : '#475569' }}>🌈</div>
                 </div>
 
                 <div className="h-3 bg-slate-700 border-x border-white/5 relative z-20 shadow-md"></div>
 
-                {/* Alt Kat (YERLER DEĞİŞTİRİLDİ) */}
+                {/* Alt Kat (D5 ve D19) */}
                 <div className="flex-1 flex gap-2">
-                   {/* Oda 2 (Yeni Sol Taraf - D5) */}
                    <div className={`flex-1 rounded-bl-2xl border border-white/5 flex flex-col items-center justify-center relative transition-colors duration-500 ${data.light3 ? 'bg-amber-500/20' : 'bg-slate-800/80'}`}>
                       <div className="absolute top-2 left-3 text-[8px] font-black text-white/40 uppercase">Oda 2</div>
                       <div className={`text-4xl ${data.light3 ? 'drop-shadow-[0_0_20px_#fbbf24]' : 'opacity-20 grayscale'}`}>💡</div>
                    </div>
-                   {/* Salon (Yeni Sağ Taraf - D19) */}
                    <div className={`flex-1 rounded-br-2xl border border-white/5 flex flex-col items-center justify-center relative transition-colors duration-500 ${data.light1 ? 'bg-amber-500/20' : 'bg-slate-800/80'}`}>
                       <div className="absolute top-2 left-3 text-[8px] font-black text-white/40 uppercase">Salon</div>
                       <div className={`text-4xl ${data.light1 ? 'drop-shadow-[0_0_20px_#fbbf24]' : 'opacity-20 grayscale'}`}>💡</div>
-                      <div className={`absolute bottom-2 left-2 text-xl transition-all ${data.music ? 'animate-bounce' : 'opacity-0'}`}>🎵</div>
+                      <div className={`absolute bottom-2 left-2 text-xl transition-all duration-500 ${data.music ? 'animate-bounce' : 'opacity-0 scale-0'}`}>🎵</div>
                    </div>
                 </div>
              </div>
@@ -141,7 +144,12 @@
       const [user, setUser] = useState(null);
       const [pin, setPin] = useState("");
       const [loggedIn, setLoggedIn] = useState(false);
-      const [homeData, setHomeData] = useState({ light1: false, light2: false, light3: false, gardenLight: false, alarm: false, alarmTriggered: false, gate: false, music: false, temp: 24.0, rgbHex: "#ff0000" });
+      const [errorMsg, setErrorMsg] = useState("");
+
+      const [homeData, setHomeData] = useState({ 
+        light1: false, light2: false, light3: false, gardenLight: false, alarm: false, alarmTriggered: false,
+        gate: false, music: false, temp: 24.0, rgbHex: "#ff0000"
+      });
 
       useEffect(() => {
         const t = setInterval(() => { if (window.firebaseReady && window.FB) { setReady(true); clearInterval(t); } }, 100);
@@ -197,10 +205,11 @@
         return (
           <div className="min-h-screen flex items-center justify-center bg-slate-50 px-6 text-center">
             <div className="bg-white w-full max-w-sm rounded-3xl p-8 shadow-2xl border border-slate-200 flex flex-col items-center">
-              <img src="mucitlogo.png" alt="Mucit Akademisi Logo" className="h-24 mb-6 object-contain" />
+              <img src="mucitlogo.png" alt="Mucit Akademisi Logo" className="h-20 mb-6 object-contain" />
               <h1 className="text-3xl font-black text-slate-900 mb-8 tracking-tighter uppercase leading-tight">MUCİT<br/><span className="text-blue-600">AKADEMİSİ</span></h1>
               <input type="password" value={pin} onChange={(e) => setPin(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && pin === "0000" && setLoggedIn(true)} placeholder="ŞİFRE (0000)" className="w-full rounded-xl bg-slate-50 border p-5 text-center text-xl text-slate-900 mb-4 font-bold outline-none focus:border-blue-500" />
-              <button onClick={() => pin === "0000" && setLoggedIn(true)} className="w-full rounded-xl bg-blue-600 text-white py-4 font-bold uppercase tracking-wider btn-touch">Sisteme Giriş</button>
+              <button onClick={() => pin === "0000" && setLoggedIn(true)} className="w-full rounded-xl bg-blue-600 text-white py-4 font-bold uppercase tracking-wider btn-touch">Giriş Yap</button>
+              {errorMsg && <p className="text-red-500 mt-4 font-bold text-sm">{errorMsg}</p>}
             </div>
           </div>
         );
@@ -211,15 +220,15 @@
           {homeData.alarmTriggered && (
              <div className="fixed inset-0 z-[100] bg-red-600/95 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center animate-pulse">
                 <div className="text-9xl mb-6">🚨</div>
-                <h1 className="text-5xl font-black text-white mb-4 uppercase tracking-widest">GÜVENLİK İHLALİ!</h1>
+                <h1 className="text-5xl font-black text-white mb-4 uppercase tracking-widest text-center">GÜVENLİK İHLALİ!</h1>
                 <button onClick={() => toggleHome("alarmTriggered", false)} className="px-8 py-5 bg-white text-red-600 rounded-2xl font-black text-2xl uppercase btn-touch shadow-2xl">Siren Sustur</button>
              </div>
           )}
 
           <header className="px-6 py-5 glass-panel sticky top-0 z-50 flex items-center justify-between shadow-lg">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-blue-600 flex items-center justify-center text-2xl shadow-lg overflow-hidden">
-                <img src="mucitlogo.png" className="w-10 h-10 object-contain invert grayscale brightness-200" alt="Logo" />
+              <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-lg overflow-hidden p-1.5">
+                <img src="mucitlogo.png" className="w-full h-full object-contain" alt="Logo" />
               </div>
               <div className="text-xl font-black uppercase tracking-tight">AKILLI EV</div>
             </div>
@@ -230,7 +239,7 @@
             <HomeVisualizer data={homeData} />
             
             <div className="grid grid-cols-2 gap-4 mb-8">
-              <MetricCard title="Evin Sıcaklığı" value={homeData.temp} unit="°C" emoji="🌡️" isDanger={homeData.temp > 28} />
+              <MetricCard title="Evin Sıcaklığı" value={homeData.temp} unit="°C" emoji="🌡️" isDanger={homeData.temp > 28} isWarning={homeData.temp < 18} />
               <div className="rounded-xl p-4 glass-panel border border-white/10 flex flex-col items-center justify-center relative overflow-hidden">
                  <div className="text-[10px] font-bold uppercase tracking-widest opacity-70 mb-2 text-white/50">Mood LED Rengi</div>
                  <input type="color" value={homeData.rgbHex} onChange={(e) => toggleHome("rgbHex", e.target.value)} className="w-full h-10 rounded-lg cursor-pointer bg-transparent border-none outline-none" />
@@ -238,7 +247,6 @@
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {/* SIRALAMA DEĞİŞTİRİLDİ */}
               <ModernWidget title="Alt Kat 2. Oda" icon="💡" active={homeData.light3} onClick={() => toggleHome("light3")} colorClass="bg-yellow-500/20 border-yellow-500/50" subtitle="Yatak Odası (D5)" />
               <ModernWidget title="Salon Işığı" icon="💡" active={homeData.light1} onClick={() => toggleHome("light1")} colorClass="bg-amber-500/20 border-amber-500/50" subtitle="Ana Oda (D19)" />
               
