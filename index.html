@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Mucit Akademisi | MUCİT ÜSSÜ v3.0</title>
+  <title>Mucit Akademisi | MUCİT ÜSSÜ v3.1</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -12,8 +12,8 @@
 
   <style>
     body { margin: 0; font-family: -apple-system, sans-serif; transition: background 0.5s ease; min-height: 100vh; }
-    .btn-touch { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
-    .btn-touch:active:not(:disabled) { transform: scale(0.96); }
+    .btn-touch { transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+    .btn-touch:active:not(.cursor-not-allowed) { transform: scale(0.96); }
     .loader { width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-bottom-color: #3b82f6; border-radius: 50%; display: inline-block; animation: spin 1s linear infinite; }
     @keyframes spin { 100% { transform: rotate(360deg); } }
     .theme-transition { transition: all 0.4s ease; }
@@ -90,17 +90,31 @@
     }
 
     function ModernWidget({ title, icon, active, onClick, colorClass, subtitle, themeStyles, disabled, children }) {
+      // Kök elemente tıklama olayını bağlayıp, disabled durumunda tamamen engelliyoruz.
+      const handleClick = () => {
+        if (!disabled) {
+          onClick();
+        }
+      };
+
       return (
-        <div className={`relative overflow-hidden p-5 rounded-[28px] border text-left theme-transition ${disabled ? 'opacity-50 grayscale' : ''} ${active ? colorClass : themeStyles.panel}`}>
-          <div className="flex justify-between items-start mb-4">
-             <div onClick={!disabled ? onClick : undefined} className={`text-4xl transition-transform duration-300 ${!disabled ? 'btn-touch' : 'cursor-not-allowed'} ${active ? 'scale-110 drop-shadow-[0_0_15px_currentColor]' : 'grayscale opacity-40'}`}>{icon}</div>
-             <div onClick={!disabled ? onClick : undefined} className={`w-12 h-6 rounded-full p-1 transition-all ${!disabled ? 'cursor-pointer' : 'cursor-not-allowed'} ${active ? 'bg-white/40' : 'bg-black/20'}`}>
+        <div 
+          onClick={handleClick}
+          className={`relative overflow-hidden p-5 rounded-[28px] border text-left select-none theme-transition ${disabled ? 'opacity-50 grayscale cursor-not-allowed' : 'cursor-pointer btn-touch'} ${active ? colorClass : themeStyles.panel}`}
+        >
+          <div className="flex justify-between items-start mb-4 pointer-events-none">
+             <div className={`text-4xl transition-transform duration-300 ${active ? 'scale-110 drop-shadow-[0_0_15px_currentColor]' : 'grayscale opacity-40'}`}>{icon}</div>
+             <div className={`w-12 h-6 rounded-full p-1 transition-all ${active ? 'bg-white/40' : 'bg-black/20'}`}>
                 <div className={`w-4 h-4 bg-white rounded-full transition-all shadow-md ${active ? 'translate-x-6' : 'translate-x-0'}`}></div>
              </div>
           </div>
-          <div className={`font-black text-sm tracking-wide ${active ? 'text-white' : themeStyles.text}`}>{title}</div>
-          <div className={`text-[10px] uppercase tracking-widest opacity-60 mt-1 font-black mb-2`}>{subtitle}</div>
-          {children}
+          <div className={`font-black text-sm tracking-wide pointer-events-none ${active ? 'text-white' : themeStyles.text}`}>{title}</div>
+          <div className={`text-[10px] uppercase tracking-widest opacity-60 mt-1 font-black mb-2 pointer-events-none`}>{subtitle}</div>
+          {children && (
+            <div onClick={e => e.stopPropagation()} className="relative z-10 cursor-default">
+              {children}
+            </div>
+          )}
         </div>
       );
     }
@@ -215,8 +229,8 @@
       const toggleHome = async (field, value = null) => {
         if (!user) return;
 
-        // --- GÜVENLİK PROTOKOLÜ v3.0 ---
-        // Eğer alarm aktifse ve kullanıcı kapıyı açmaya çalışıyorsa işlemi durdur.
+        // --- GÜVENLİK PROTOKOLÜ v3.1 ---
+        // Alarm aktifse kapı işlemi tamamen reddedilir.
         if (field === "gate" && homeData.alarm) {
            return; 
         }
@@ -224,6 +238,7 @@
         const newValue = value !== null ? value : !homeData[field];
         let updates = { [field]: newValue };
 
+        // Alarm açıldığında kapı açıksa otomatik kapatılır.
         if (field === "alarm" && newValue === true) {
           updates.gate = false;
         }
@@ -304,7 +319,6 @@
               <ModernWidget title="DIŞ ALAN IŞIĞI" icon="🌞" active={homeData.gardenLight} onClick={() => toggleHome("gardenLight")} colorClass="bg-orange-500 border-orange-600 shadow-[0_10px_30px_rgba(249,115,22,0.3)]" subtitle="GÜVENLİK AYDINLATMASI" themeStyles={themeStyles} />
               <ModernWidget title="GÜVENLİK RADARI" icon="🚨" active={homeData.alarm} onClick={() => toggleHome("alarm")} colorClass="bg-red-600 border-red-700 shadow-[0_10px_30px_rgba(220,38,38,0.3)]" subtitle="AKTİF KORUMA SİSTEMİ" themeStyles={themeStyles} />
               
-              {/* GÜVENLİK KİLİDİ: Alarm açıkken tıklama engellendi ve subtitle değişti */}
               <ModernWidget 
                 title="GİRİŞ BARİYERİ" 
                 icon="🚧" 
@@ -317,7 +331,7 @@
               />
               
               <div className="col-span-2 md:col-span-3">
-                <ModernWidget title="MÜZİK SİSTEMİ" icon="🎵" active={homeData.music} onClick={() => toggleHome("music")} colorClass="bg-purple-600 border-purple-700 shadow-[0_10px_30px_rgba(147,51,234,0.3)]" subtitle="SESLİ BİLGİLENDİRME" themeStyles={themeStyles} />
+                <ModernWidget title="MÜZİK ÇALAR" icon="🎵" active={homeData.music} onClick={() => toggleHome("music")} colorClass="bg-purple-600 border-purple-700 shadow-[0_10px_30px_rgba(147,51,234,0.3)]" subtitle="MÜZİK VE ALARM SİSTEMİ" themeStyles={themeStyles} />
               </div>
             </div>
           </main>
